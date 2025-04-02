@@ -368,9 +368,11 @@ class MainWindow(QMainWindow):
         layout.addWidget(right_widget)
 
         # 设置个人密码
-        if not self.totp_manager.config["md5_hash"]:
+        if "skip_password" not in self.totp_manager.config:
+            # 首次使用，提示是否设置密码
             self.prompt_personal_key()
-        else:
+        elif not self.totp_manager.config["skip_password"]:
+            # 已经设置过密码，验证密码
             self.verify_personal_key()
 
         # 更新平台列表

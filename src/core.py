@@ -55,7 +55,8 @@ class TOTPManager:
             os.makedirs(APP_DATA_DIR)
         self.config = self.load_config()
         self.personal_key = None
-        self.skip_password = False
+        # 根据配置文件初始化skip_password
+        self.skip_password = self.config.get("skip_password", False)
         
     def load_config(self):
         if os.path.exists(CONFIG_FILE_PATH):
@@ -68,8 +69,7 @@ class TOTPManager:
                         "platforms": {
                             "default": config["encrypted_secret_key"]
                         },
-                        "md5_hash": config["md5_hash"],
-                        "skip_password": False
+                        "md5_hash": config["md5_hash"]
                     }
                     # 保存新格式
                     with open(CONFIG_FILE_PATH, 'w') as f:
@@ -78,11 +78,8 @@ class TOTPManager:
                 # 确保platforms字段存在
                 if "platforms" not in config:
                     config["platforms"] = {}
-                # 确保skip_password字段存在
-                if "skip_password" not in config:
-                    config["skip_password"] = False
                 return config
-        return {"platforms": {}, "md5_hash": "", "skip_password": False}
+        return {"platforms": {}, "md5_hash": ""}
     
     def save_config(self):
         with open(CONFIG_FILE_PATH, 'w') as file:
@@ -97,11 +94,12 @@ class TOTPManager:
         return True
 
     def set_personal_key(self, key):
-        if self.config["skip_password"]:
+        if self.config.get("skip_password", False):
             self.personal_key = ""
             return True
-        if not self.config["md5_hash"]:
+        if not self.config.get("md5_hash"):
             self.config["md5_hash"] = hashlib.md5(key.encode()).hexdigest()
+            self.config["skip_password"] = False  # 设置密码时明确标记不跳过密码
             self.save_config()
         elif hashlib.md5(key.encode()).hexdigest() != self.config["md5_hash"]:
             return False
@@ -109,7 +107,7 @@ class TOTPManager:
         return True
         
     def add_platform(self, name, secret_key):
-        if not self.personal_key and not self.skip_password:
+        if not self.personal_key and not self.config.get("skip_password", False):
             raise Exception("需要先设置个人密码")
             
         if self.skip_password:
@@ -127,7 +125,7 @@ class TOTPManager:
             self.save_config()
             
     def get_totp(self, platform_name):
-        if not self.personal_key and not self.skip_password:
+        if not self.personal_key and not self.config.get("skip_password", False):
             raise Exception("需要先设置个人密码")
         if platform_name not in self.config["platforms"]:
             raise Exception("平台不存在")
