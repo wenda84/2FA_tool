@@ -1,13 +1,13 @@
-from PySide6.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, 
-                             QPushButton, QListWidget, QLineEdit, QLabel, QMessageBox, 
-                             QInputDialog, QMenu, QApplication, QMenuBar, QDialog,
-                             QCheckBox)
-from PySide6.QtCore import QTimer, Qt, QSize
-from PySide6.QtGui import QColor, QPalette, QIcon
+from PySide6.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
+                               QPushButton, QListWidget, QLineEdit, QLabel, QMessageBox,
+                               QMenu, QApplication, QDialog,
+                               QCheckBox)
+from PySide6.QtCore import QTimer, Qt
 from core import TOTPManager, get_resource_path
 import time
 import sys
 import os
+
 
 class PasswordDialog(QDialog):
     def __init__(self, parent=None, title="输入密码", prompt="请输入密码:"):
@@ -41,20 +41,20 @@ class PasswordDialog(QDialog):
             }
         """)
         layout = QVBoxLayout(self)
-        
+
         # 提示标签
         layout.addWidget(QLabel(prompt))
-        
+
         # 密码输入框
         self.password_input = QLineEdit()
         self.password_input.setEchoMode(QLineEdit.Password)
         layout.addWidget(self.password_input)
-        
+
         # 显示密码复选框
         self.show_password = QCheckBox("显示密码")
         self.show_password.toggled.connect(self.toggle_password_visibility)
         layout.addWidget(self.show_password)
-        
+
         # 按钮区域
         button_layout = QHBoxLayout()
         ok_button = QPushButton("确定")
@@ -64,12 +64,13 @@ class PasswordDialog(QDialog):
         button_layout.addWidget(ok_button)
         button_layout.addWidget(cancel_button)
         layout.addLayout(button_layout)
-    
+
     def toggle_password_visibility(self, checked):
         self.password_input.setEchoMode(QLineEdit.Normal if checked else QLineEdit.Password)
-    
+
     def get_password(self):
         return self.password_input.text()
+
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -157,11 +158,11 @@ class MainWindow(QMainWindow):
         self.totp_manager = TOTPManager()
         self.setup_menu()  # 添加菜单设置
         self.setup_ui()
-        
+
     def setup_menu(self):
         # 创建菜单栏
         menubar = self.menuBar()
-        
+
         # 文件菜单
         file_menu = menubar.addMenu("文件")
         clear_action = file_menu.addAction("清除所有配置")
@@ -169,7 +170,7 @@ class MainWindow(QMainWindow):
         file_menu.addSeparator()
         exit_action = file_menu.addAction("退出")
         exit_action.triggered.connect(self.close)
-        
+
         # 帮助菜单
         help_menu = menubar.addMenu("帮助")
         about_action = help_menu.addAction("关于")
@@ -183,7 +184,7 @@ class MainWindow(QMainWindow):
             QMessageBox.Yes | QMessageBox.No,
             QMessageBox.No
         )
-        
+
         if reply == QMessageBox.Yes:
             try:
                 # 删除配置文件
@@ -218,7 +219,7 @@ class MainWindow(QMainWindow):
         layout = QHBoxLayout(central_widget)
         layout.setContentsMargins(20, 20, 20, 20)  # 增加边距
         layout.setSpacing(20)  # 增加控件间距
-        
+
         # 左侧平台列表面板
         left_widget = QWidget()
         left_widget.setObjectName("leftPanel")
@@ -258,10 +259,10 @@ class MainWindow(QMainWindow):
         """)
         left_layout.addWidget(QLabel("已保存的平台:"))
         left_layout.addWidget(self.platform_list)
-        
+
         # 添加平台控件
         add_platform_layout = QVBoxLayout()  # 改用垂直布局
-        
+
         # 创建一个Label用于显示添加平台的表单
         form_label = QLabel()
         form_label.setStyleSheet("""
@@ -273,13 +274,13 @@ class MainWindow(QMainWindow):
                 color: #2f3542;
             }
         """)
-        
+
         # 将输入框封装在表格中
         self.platform_name_input = QLineEdit()
         self.platform_key_input = QLineEdit()
         self.platform_name_input.setStyleSheet("margin: 2px 0;")
         self.platform_key_input.setStyleSheet("margin: 2px 0;")
-        
+
         form_label.setText(f"""
             <table style='border-spacing: 5px; border-collapse: separate;'>
                 <tr>
@@ -292,23 +293,23 @@ class MainWindow(QMainWindow):
                 </tr>
             </table>
         """)
-        
+
         # 创建一个widget来容纳输入框
         input_widget = QWidget()
         input_layout = QVBoxLayout(input_widget)
         input_layout.setContentsMargins(15, 15, 15, 15)
-        
+
         name_layout = QHBoxLayout()
         name_layout.addWidget(QLabel("平台名称:"), 0)
         name_layout.addWidget(self.platform_name_input, 1)
-        
+
         key_layout = QHBoxLayout()
         key_layout.addWidget(QLabel("密钥:"), 0)
         key_layout.addWidget(self.platform_key_input, 1)
-        
+
         input_layout.addLayout(name_layout)
         input_layout.addLayout(key_layout)
-        
+
         # 设置输入区域的样式
         input_widget.setStyleSheet("""
             QWidget {
@@ -319,16 +320,16 @@ class MainWindow(QMainWindow):
                 min-width: 80px;
             }
         """)
-        
+
         # 添加按钮
         add_btn = QPushButton("添加平台")
         add_btn.clicked.connect(self.add_platform)
-        
+
         # 将所有控件添加到布局
         add_platform_layout.addWidget(input_widget)
         add_platform_layout.addWidget(add_btn)
         left_layout.addLayout(add_platform_layout)
-        
+
         # 右侧验证码显示面板
         right_widget = QWidget()
         right_widget.setObjectName("rightPanel")
@@ -340,7 +341,7 @@ class MainWindow(QMainWindow):
             }
         """)
         right_layout = QVBoxLayout(right_widget)
-        
+
         # 验证码显示区域
         self.code_label = QLabel("请选择平台")
         self.code_label.setStyleSheet("""
@@ -354,45 +355,45 @@ class MainWindow(QMainWindow):
         """)
         # 设置固定宽度确保对齐
         self.code_label.setMinimumWidth(300)
-        
+
         # 添加复制按钮
         copy_btn = QPushButton("复制验证码")
         copy_btn.clicked.connect(self.copy_code)
-        
+
         right_layout.addWidget(self.code_label)
         right_layout.addWidget(copy_btn)
         right_layout.addStretch()  # 添加弹性空间
-        
+
         layout.addWidget(left_widget)
         layout.addWidget(right_widget)
-        
+
         # 设置个人密码
         if not self.totp_manager.config["md5_hash"]:
             self.prompt_personal_key()
         else:
             self.verify_personal_key()
-            
+
         # 更新平台列表
         self.update_platform_list()
-        
+
         # 设置定时器更新验证码
         self.timer = QTimer()
         self.timer.timeout.connect(self.update_current_code)
         self.timer.start(1000)
-        
+
         # 设置固定大小和最小大小
         self.setMinimumSize(800, 600)
-        
+
         # 设置窗口布局比例
         layout.setStretch(0, 3)  # 左侧面板占比
         layout.setStretch(1, 2)  # 右侧面板占比
-        
+
     def prompt_personal_key(self):
         msg = "是否设置个人密码？\n设置密码可以加密保护您的平台密钥，不设置则明文保存。"
         reply = QMessageBox.question(self, "密码设置", msg,
-                                   QMessageBox.Yes | QMessageBox.No,
-                                   QMessageBox.Yes)
-        
+                                     QMessageBox.Yes | QMessageBox.No,
+                                     QMessageBox.Yes)
+
         if reply == QMessageBox.Yes:
             while True:
                 dialog = PasswordDialog(self, "设置个人密码", "请输入个人密码:")
@@ -413,7 +414,7 @@ class MainWindow(QMainWindow):
         if self.totp_manager.config.get("skip_password", False):
             self.totp_manager.set_skip_password()
             return
-            
+
         while True:
             dialog = PasswordDialog(self, "验证", "请输入个人密码:")
             if dialog.exec() != QDialog.Accepted:
@@ -422,11 +423,11 @@ class MainWindow(QMainWindow):
             if self.totp_manager.set_personal_key(key):
                 break
             QMessageBox.warning(self, "错误", "密码错误，请重试")
-            
+
     def update_platform_list(self):
         self.platform_list.clear()
         self.platform_list.addItems(self.totp_manager.get_platforms())
-        
+
     def add_platform(self):
         name = self.platform_name_input.text().strip()
         key = self.platform_key_input.text().strip()
@@ -438,11 +439,11 @@ class MainWindow(QMainWindow):
                 self.platform_key_input.clear()
             except Exception as e:
                 QMessageBox.warning(self, "错误", str(e))
-                
+
     def on_platform_selected(self, current, previous):
         if current:
             self.update_current_code()
-            
+
     def update_current_code(self):
         current_platform = self.platform_list.currentItem()
         if current_platform:
@@ -473,7 +474,7 @@ class MainWindow(QMainWindow):
                 self.current_code = None
         else:
             self.current_code = None
-    
+
     def copy_code(self):
         if hasattr(self, 'current_code') and self.current_code:
             # 复制到剪贴板
@@ -481,7 +482,7 @@ class MainWindow(QMainWindow):
             clipboard.setText(self.current_code)
             # 显示提示（可选）
             QMessageBox.information(self, "提示", "验证码已复制到剪贴板")
-    
+
     # 添加新方法
     def show_context_menu(self, position):
         item = self.platform_list.itemAt(position)
@@ -489,19 +490,19 @@ class MainWindow(QMainWindow):
             context_menu = QMenu()
             delete_action = context_menu.addAction("删除")
             action = context_menu.exec_(self.platform_list.mapToGlobal(position))
-            
+
             if action == delete_action:
                 self.delete_platform(item.text())
-    
+
     def delete_platform(self, platform_name):
         reply = QMessageBox.question(
-            self, 
-            "确认删除", 
+            self,
+            "确认删除",
             f"确定要删除平台 '{platform_name}' 吗？",
             QMessageBox.Yes | QMessageBox.No,
             QMessageBox.No
         )
-        
+
         if reply == QMessageBox.Yes:
             try:
                 self.totp_manager.remove_platform(platform_name)

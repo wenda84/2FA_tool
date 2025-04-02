@@ -2,10 +2,10 @@
 block_cipher = None
 
 a = Analysis(
-    ['main.py'],
+    ['src/main.py'],
     pathex=[],
     binaries=[],
-    datas=[('icons/2fa.ico', 'icons')],  # 添加图标文件到打包资源
+    datas=[('resource/2fa.ico', 'icons')],  # 添加图标文件到打包资源
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},

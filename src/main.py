@@ -1,7 +1,4 @@
-import pyotp
-import time
 import base64
-import hashlib
 import sys
 import os
 import json
@@ -55,7 +52,7 @@ def get_icon():
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    app.setWindowIcon(get_icon())  # 使用base64图标
+    app.setWindowIcon(get_icon())  
     window = MainWindow()
     window.show()
     sys.exit(app.exec())
@@ -63,4 +60,3 @@ if __name__ == '__main__':
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        # 移除重复的图标设置，因为已经在应用程序级别设置过了
