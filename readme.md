@@ -12,7 +12,7 @@
 - 数据本地加密存储
 
 ## 使用说明
-1. 首次使用时可以设置个人密码
+1. 首次使用时可以设置个人密码  
    ![image](https://github.com/user-attachments/assets/3fc31647-a784-4581-91fc-2620288a92ae)
 
 2. 添加平台：
